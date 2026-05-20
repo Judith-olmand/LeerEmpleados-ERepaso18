@@ -1,17 +1,28 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    static void main() {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        IO.println(String.format("Hello and welcome!"));
+import java.sql.*;
+import java.util.*;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            IO.println("i = " + i);
+public class Main {
+    public static void main(String[] args) {
+        try (Connection conn = DriverManager.getConnection(
+                DBConfig.getUrl(),
+                DBConfig.getUser(),
+                DBConfig.getPassword());
+             Statement st = conn.createStatement();) {
+            System.out.println("Conexión establecida con Oracle.");
+
+            String consulta = "SELECT NOMBRE, SALARIO FROM EMPLEADO";
+            ResultSet rs = st.executeQuery(consulta);
+            System.out.printf("%-10s %-10s\n", "NOMBRE", "SALARIO");
+            System.out.println("-".repeat(20));
+            while (rs.next()) {
+                System.out.printf("%-10s %-10s\n", rs.getString(1), rs.getInt(2));
+            }
+            rs.close();
+
+        } catch (SQLException e) {
+            System.out.println("Error al conectar: " + e.getMessage());
         }
     }
 }
